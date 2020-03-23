@@ -28,11 +28,13 @@ services:
 
   mysql:
     container_name: lara_mysql
-    image: mysql:5.7
+    build:
+      context: ./mysql
+    volumes:
+      - ./mysql/conf.d/:/etc/mysql/conf.d
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: lara-db
       TZ: 'Asia/Tokyo'
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
       - 3306:3306
