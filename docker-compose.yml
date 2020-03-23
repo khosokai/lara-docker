@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  nginx:
+    container_name: lara_nginx
+    image: nginx:alpine
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ${APP_CODE_PATH_HOST}${APP_CODE_DIRECTORY}/public:/var/www/${APP_CODE_DIRECTORY}/public
+    ports:
+      - 80:80
+    depends_on:
+      - phpfpm
+
+  phpfpm:
+    container_name: lara_phpfpm
+    build:
+      context: ./phpfpm
+    volumes:
+      - ${APP_CODE_PATH_HOST}${APP_CODE_DIRECTORY}:/var/www/${APP_CODE_DIRECTORY}
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_DATABASE=lara-db
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+
+  mysql:
+    container_name: lara_mysql
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: lara-db
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
